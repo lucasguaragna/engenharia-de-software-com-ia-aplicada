@@ -1,0 +1,16 @@
+<div class="col-md-3">
+    <div class="card product-card h-100">
+        <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{name}}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{genres}}</h6>
+            <p class="card-text flex-grow-1" style="font-size: 0.9em; color: #555;">
+                {{overview}}
+            </p>
+            <p class="card-text mb-2">
+                <strong>Rating:</strong> ⭐ {{vote_average}}<br>
+                <strong>Runtime:</strong> {{runtime}} min<br>
+            </p>
+            <button class="btn btn-primary watch-now-btn w-100 mt-auto" data-movie='{{movie}}'><i class="bi bi-eye"></i> Watched</button>
+        </div>
+    </div>
+</div>

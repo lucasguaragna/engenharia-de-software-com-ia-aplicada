@@ -218,8 +218,10 @@ async function configureNeuralNetAndTrain(trainingData) {
 
     // Compilação do modelo
     model.compile({
-        optimizer: tf.train.adam(0.01), // adam é um otimizador que ajusta os pesos do modelo
-        loss: 'binaryCrossentropy', // binaryCrossentropy é uma função de perda que mede a diferença entre a saída do modelo e a saída real
+        optimizer: tf.train.adam(0.01), // adam é um otimizador 
+        // que ajusta os pesos do modelo
+        loss: 'binaryCrossentropy', // binaryCrossentropy é uma função de perda 
+        // que mede a diferença entre a saída do modelo e a saída real
         metrics: ['accuracy'] // accuracy é uma métrica que mede a precisão do modelo
     })
     
@@ -242,12 +244,19 @@ async function configureNeuralNetAndTrain(trainingData) {
 }
 
 async function trainModel({ users }) {
+    // envia mensagem para o main thread: main thread é o thread que executa o \
+    // código do navegador. Ele avisa "eu estou fazendo progresso" para o \
+    // main thread
     console.log('Training model with users:', users);
     postMessage({ type: workerEvents.progressUpdate, progress: { progress: 1 } });
+
+    // carrega os produtos
     const products = await (await fetch('/data/products.json')).json()
 
+    // cria o contexto
     const context = makeContext(products, users)
     
+    // cria os vetores dos produtos
     context.productVectors = products.map(product => {
      return {
         name: product.name,
@@ -255,17 +264,21 @@ async function trainModel({ users }) {
         vector: encodeProduct(product, context).dataSync()
      }   
     })
-        
+    // salva o contexto global
     _globalCtx = context
 
+    // cria os dados de treinamento
     const trainingData = createTraningData(context)
 
+    // treina o modelo
     _model = await configureNeuralNetAndTrain(trainingData)
     
+    // avisa que o treinamento foi concluído
     postMessage({ type: workerEvents.progressUpdate, progress: { progress: 100 } });
-
     postMessage({ type: workerEvents.trainingComplete });
 }
+
+// função de recomendação: recebe um usuário e retorna os produtos recomendados
 function recommend({ user }) {
     if (!_model) return;
     const context = _globalCtx
@@ -284,7 +297,6 @@ function recommend({ user }) {
     // 2️⃣ Crie pares de entrada: para cada produto, concatene o vetor do usuário
     //    com o vetor codificado do produto.
     //    Por quê? O modelo prevê o "score de compatibilidade" para cada par (usuário, produto).
-
 
     const inputs = context.productVectors.map(({ vector }) => {
         return [...userVector, ...vector]

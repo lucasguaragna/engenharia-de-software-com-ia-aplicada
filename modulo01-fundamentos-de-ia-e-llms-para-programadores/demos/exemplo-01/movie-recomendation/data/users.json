@@ -1,0 +1,94 @@
+[
+    {
+        "id": 1,
+        "name": "Ana Lima",
+        "age": 25,
+        "watchedMovies": [
+            { "id": 19995, "name": "Avatar" },
+            { "id": 285, "name": "Pirates of the Caribbean: At World's End" },
+            { "id": 49529, "name": "John Carter" },
+            { "id": 38757, "name": "Tangled" },
+            { "id": 767, "name": "Harry Potter and the Half-Blood Prince" },
+            { "id": 58, "name": "Pirates of the Caribbean: Dead Man's Chest" },
+            { "id": 2454, "name": "The Chronicles of Narnia: Prince Caspian" },
+            { "id": 1865, "name": "Pirates of the Caribbean: On Stranger Tides" },
+            { "id": 122917, "name": "The Hobbit: The Battle of the Five Armies" },
+            { "id": 57158, "name": "The Hobbit: The Desolation of Smaug" },
+            { "id": 2268, "name": "The Golden Compass" },
+            { "id": 254, "name": "King Kong" }
+        ]
+    },
+    {
+        "id": 2,
+        "name": "Bruno Ferreira",
+        "age": 27,
+        "watchedMovies": [
+            { "id": 135397, "name": "Jurassic World" },
+            { "id": 49026, "name": "The Dark Knight Rises" },
+            { "id": 24428, "name": "The Avengers" },
+            { "id": 254, "name": "King Kong" },
+            { "id": 285, "name": "Pirates of the Caribbean: At World's End" },
+            { "id": 37724, "name": "Skyfall" },
+            { "id": 1452, "name": "Superman Returns" },
+            { "id": 20662, "name": "Robin Hood" }
+        ]
+    },
+    {
+        "id": 3,
+        "name": "Camila Souza",
+        "age": 30,
+        "watchedMovies": [
+            { "id": 597, "name": "Titanic" },
+            { "id": 38757, "name": "Tangled" },
+            { "id": 19995, "name": "Avatar" }
+        ]
+    },
+    {
+        "id": 4,
+        "name": "Diego Almeida",
+        "age": 22,
+        "watchedMovies": [
+            { "id": 49026, "name": "The Dark Knight Rises" },
+            { "id": 559, "name": "Spider-Man 3" },
+            { "id": 99861, "name": "Avengers: Age of Ultron" },
+            { "id": 209112, "name": "Batman v Superman: Dawn of Justice" },
+            { "id": 1452, "name": "Superman Returns" },
+            { "id": 49521, "name": "Man of Steel" },
+            { "id": 24428, "name": "The Avengers" },
+            { "id": 1930, "name": "The Amazing Spider-Man" },
+            { "id": 271110, "name": "Captain America: Civil War" },
+            { "id": 558, "name": "Spider-Man 2" },
+            { "id": 10138, "name": "Iron Man 3" }
+        ]
+    },
+    {
+        "id": 5,
+        "name": "Eduarda Nunes",
+        "age": 28,
+        "watchedMovies": [
+            { "id": 206647, "name": "Spectre" },
+            { "id": 10764, "name": "Quantum of Solace" },
+            { "id": 37724, "name": "Skyfall" },
+            { "id": 41154, "name": "Men in Black 3" },
+            { "id": 20662, "name": "Robin Hood" },
+            { "id": 44833, "name": "Battleship" }
+        ]
+    },
+    {
+        "id": 6,
+        "name": "Fernando Mendes",
+        "age": 42,
+        "watchedMovies": [
+            { "id": 597, "name": "Titanic" },
+            { "id": 135397, "name": "Jurassic World" },
+            { "id": 19995, "name": "Avatar" },
+            { "id": 58595, "name": "Snow White and the Huntsman" },
+            { "id": 24428, "name": "The Avengers" },
+            { "id": 57201, "name": "The Lone Ranger" },
+            { "id": 108052, "name": "X-Men: Days of Future Past" },
+            { "id": 68721, "name": "Iron Man 2" },
+            { "id": 271110, "name": "Captain America: Civil War" },
+            { "id": 1930, "name": "The Amazing Spider-Man" }
+        ]
+    }
+]
