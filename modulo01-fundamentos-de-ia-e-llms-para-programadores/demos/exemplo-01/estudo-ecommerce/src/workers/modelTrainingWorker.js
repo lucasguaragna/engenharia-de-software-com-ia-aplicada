@@ -2,11 +2,7 @@ import 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js';
 import { workerEvents } from '../events/constants.js';
 let _globalCtx = {};
 let _model = null
-
-// ⚖️ Pesos para cada fator de similaridade
-// Ajuste esses valores para dar mais importância  
-// a certas características
-// Exemplo: Se quiser priorizar cor, aumente WEIGHTS.color
+// Pesos para cada característica
 const WEIGHTS = {
     category: 0.4,
     color: 0.3,
@@ -20,7 +16,7 @@ const WEIGHTS = {
 // Example: price=129.99, minPrice=39.99, maxPrice=199.99 → 0.56
 const normalize = (value, min, max) => (value - min) / ((max - min) || 1)
 
-// makeContext() 🧠 Cria o "cérebro" do sistema
+// 🧠 Cria o "cérebro" do sistema
 // Recebe todos os produtos e usuários e calcula estatísticas
 // para normalizar os dados
 function makeContext(products, users) {
@@ -36,16 +32,13 @@ function makeContext(products, users) {
     const colors = [...new Set(products.map(p => p.color))]
     const categories = [...new Set(products.map(p => p.category))]
 
+    debugger
 
     // 🏷️ Criamos um mapa de nomes para números (Label Encoding)
-    // Redes neurais não entendem texto, então convertemos 
-    // cada cor e categoria em um ID numérico.
+    // Redes neurais não entendem texto, então convertemos cada cor e categoria em um ID numérico.
     // Exemplo: { "Azul": 0, "Verde": 1 }
-
-    // .map() percorre a lista e transforma cada item em um 
-    // novo formato (neste caso, pares [nome, índice])
-    // Object.fromEntries() converte essa lista de pares em um 
-    // objeto literal para busca rápida { nome: índice }
+    // .map() percorre a lista e transforma cada item em um novo formato (neste caso, pares [nome, índice])
+    // Object.fromEntries() converte essa lista de pares em um objeto literal para busca rápida { nome: índice }
     const colorsIndex = Object.fromEntries(
         colors.map((color, index) => [color, index])
     )

@@ -45,6 +45,10 @@ function makeContext(products, users) {
     const ageSums = {}
     const ageCounts = {}
 
+    // 1. Itera sobre cada usuário
+    // 2. Para cada usuário, itera sobre cada compra
+    // 3. Soma a idade do usuário para cada produto comprado
+    // 4. Conta quantas vezes cada produto foi comprado
     users.forEach(user => {
         user.purchases.forEach(p => {
             ageSums[p.name] = (ageSums[p.name] || 0) + user.age
@@ -52,6 +56,9 @@ function makeContext(products, users) {
         })
     })
 
+    // 1. Itera sobre cada produto
+    // 2. Calcula a média de idade dos usuários que compraram o produto
+    // 3. Normaliza a média de idade para o intervalo [0, 1]
     const productAvgAgeNorm = Object.fromEntries(
         products.map(product => {
             const avg = ageCounts[product.name] ?
