@@ -36,6 +36,9 @@ export class MovieView extends View {
                 genres: (movie.genres || []).map(g => g.name || g).join(', '),
                 vote_average: movie.vote_average,
                 runtime: movie.runtime,
+                budget: movie.budget ? movie.budget.toLocaleString() : 'N/A',
+                popularity: movie.popularity ? movie.popularity.toFixed(1) : 'N/A',
+                original_language: movie.original_language ? movie.original_language.toUpperCase() : 'N/A',
                 overview: (movie.overview || '').substring(0, 100) + '...',
                 movie: JSON.stringify(movie).replace(/'/g, '&apos;').replace(/"/g, '&quot;')
             });

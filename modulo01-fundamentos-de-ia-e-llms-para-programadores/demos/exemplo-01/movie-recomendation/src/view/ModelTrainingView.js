@@ -61,8 +61,17 @@ export class ModelView extends View {
 
     renderAllUsersWatchedHistory(users) {
         const html = users.map(user => {
-            const historyHtml = user.watchedMovies.map(watchedMovie => {
-                return `<span class="badge bg-light text-dark me-1 mb-1">${watchedMovie.name}</span>`;
+            const historyHtml = user.watchedMovies.map(movie => {
+                const genresStr = Array.isArray(movie.genres) ? movie.genres.join(', ') : (movie.genres || 'N/A');
+                const rating = movie.vote_average || 'N/A';
+                const runtime = movie.runtime ? `${movie.runtime} min` : 'N/A';
+                const budget = movie.budget ? `$${movie.budget.toLocaleString()}` : 'N/A';
+                const pop = movie.popularity ? movie.popularity.toFixed(1) : 'N/A';
+                const lang = movie.original_language ? movie.original_language.toUpperCase() : 'N/A';
+
+                const tooltipContent = `⭐ ${rating} | ⏱ ${runtime} | 💰 ${budget} | 📈 ${pop} | 🌍 ${lang} | 🎭 ${genresStr}`.replace(/"/g, '&quot;');
+
+                return `<span class="badge bg-light text-dark me-1 mb-1" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="${tooltipContent}">${movie.name}</span>`;
             }).join('');
 
             return `
@@ -76,5 +85,11 @@ export class ModelView extends View {
         }).join('');
 
         this.#allUsersWatchedHistoryList.innerHTML = html;
+
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(this.#allUsersWatchedHistoryList.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
     }
 }

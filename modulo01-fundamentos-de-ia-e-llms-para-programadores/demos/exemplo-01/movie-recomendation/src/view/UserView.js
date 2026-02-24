@@ -49,14 +49,37 @@ export class UserView extends View {
         }
 
         const html = watchedMovies.map(movie => {
+            const genresStr = Array.isArray(movie.genres) ? movie.genres.join(', ') : (movie.genres || 'N/A');
+            const rating = movie.vote_average || 'N/A';
+            const runtime = movie.runtime ? `${movie.runtime} min` : 'N/A';
+            const budget = movie.budget ? `$${movie.budget.toLocaleString()}` : 'N/A';
+            const pop = movie.popularity ? movie.popularity.toFixed(1) : 'N/A';
+            const lang = movie.original_language ? movie.original_language.toUpperCase() : 'N/A';
+            
+            const tooltipContent = `⭐ ${rating} | ⏱ ${runtime} | 💰 ${budget} | 📈 ${pop} | 🌍 ${lang} | 🎭 ${genresStr}`.replace(/"/g, '&quot;');
+
             return this.replaceTemplate(this.#movieTemplate, {
+                genres: genresStr,
+                vote_average: rating,
+                runtime: runtime,
+                budget: budget,
+                popularity: pop,
+                original_language: lang,
+                overview: movie.overview || 'No overview available.',
                 ...movie,
-                movie: JSON.stringify(movie)
+                tooltip_html: `data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="${tooltipContent}"`,
+                movie: JSON.stringify(movie).replace(/'/g, '&apos;').replace(/"/g, '&quot;')
             });
         }).join('');
 
         this.#watchedMoviesList.innerHTML = html;
         this.attachWatchedMovieClickHandlers();
+
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(this.#watchedMoviesList.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
     }
 
     addWatchedMovie(movie) {
@@ -65,21 +88,45 @@ export class UserView extends View {
             this.#watchedMoviesList.innerHTML = '';
         }
 
+        const genresStr = Array.isArray(movie.genres) ? movie.genres.join(', ') : (movie.genres || 'N/A');
+        const rating = movie.vote_average || 'N/A';
+        const runtime = movie.runtime ? `${movie.runtime} min` : 'N/A';
+        const budget = movie.budget ? `$${movie.budget.toLocaleString()}` : 'N/A';
+        const pop = movie.popularity ? movie.popularity.toFixed(1) : 'N/A';
+        const lang = movie.original_language ? movie.original_language.toUpperCase() : 'N/A';
+        
+        const tooltipContent = `⭐ ${rating} | ⏱ ${runtime} | 💰 ${budget} | 📈 ${pop} | 🌍 ${lang} | 🎭 ${genresStr}`.replace(/"/g, '&quot;');
+
         const movieHtml = this.replaceTemplate(this.#movieTemplate, {
+            genres: genresStr,
+            vote_average: rating,
+            runtime: runtime,
+            budget: budget,
+            popularity: pop,
+            original_language: lang,
+            overview: movie.overview || 'No overview available.',
             ...movie,
-            movie: JSON.stringify(movie)
+            tooltip_html: `data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="${tooltipContent}"`,
+            movie: JSON.stringify(movie).replace(/'/g, '&apos;').replace(/"/g, '&quot;')
         });
 
         this.#watchedMoviesList.insertAdjacentHTML('afterbegin', movieHtml);
 
         const newMovie = this.#watchedMoviesList.firstElementChild.querySelector('.watched-movie');
-        newMovie.classList.add('watched-movie-highlight');
-
-        setTimeout(() => {
-            newMovie.classList.remove('watched-movie-highlight');
-        }, 1000);
+        if(newMovie){
+           newMovie.classList.add('watched-movie-highlight');
+           setTimeout(() => {
+               newMovie.classList.remove('watched-movie-highlight');
+           }, 1000);
+        }
 
         this.attachWatchedMovieClickHandlers();
+        
+        // Initialize tooltips for the new element
+        const tooltipTriggerList = [].slice.call(this.#watchedMoviesList.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
     }
 
     attachUserSelectListener() {

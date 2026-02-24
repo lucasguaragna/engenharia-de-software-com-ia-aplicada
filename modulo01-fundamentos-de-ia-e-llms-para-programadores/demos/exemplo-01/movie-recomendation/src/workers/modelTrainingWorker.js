@@ -7,10 +7,10 @@ let _model = null;
 
 const WEIGHTS = {
     budget: 0.1,
-    popularity: 0.2,
+    popularity: 0.4,
     runtime: 0.1,
     vote_average: 0.2,
-    genres: 0.3,
+    genres: 0.6,
     original_language: 0.1,
 };
 
@@ -47,7 +47,6 @@ function makeContext(movies, users) {
 
     const allGenres = [...new Set(movies.flatMap(p => p.genres || []))];
     const original_languages = [...new Set(movies.map(p => p.original_language))];
-
     const genresIndex = Object.fromEntries(allGenres.map((g, index) => [g, index]));
     const languagesIndex = Object.fromEntries(original_languages.map((l, index) => [l, index]));
 
@@ -116,8 +115,8 @@ function encodeUser(user, context) {
 }
 
 function createTraningData(context) {
-    const inputs = [];
-    const labels = [];
+    let positiveSamples = [];
+    let negativeSamples = [];
 
     context.users
         .filter(user => user.watchedMovies.length)
@@ -126,18 +125,42 @@ function createTraningData(context) {
             context.movies.forEach(movie => {
                 const movieVector = encodeMovie(movie, context).dataSync();
                 
-                const label = user.watchedMovies.some(
-                    watchedMovie => String(watchedMovie.id) === String(movie.id) ? 1 : 0
+                const isWatched = user.watchedMovies.some(
+                    watchedMovie => String(watchedMovie.id) === String(movie.id)
                 );
 
-                inputs.push([...userVector, ...movieVector]);
-                labels.push(label);
+                const sample = [...userVector, ...movieVector];
+                
+                if (isWatched) {
+                    positiveSamples.push(sample);
+                } else {
+                    negativeSamples.push(sample);
+                }
             });
         });
 
+    // Balanceamento: Undersampling dos negativos para igualar os positivos
+    // (Muitos zeros viciam a rede a sempre prever 0)
+    tf.util.shuffle(negativeSamples);
+    const balancedNegatives = negativeSamples.slice(0, positiveSamples.length);
+    
+    // Mescla e embaralha o dataset final
+    const inputs = [...positiveSamples, ...balancedNegatives];
+    const labels = [
+        ...Array(positiveSamples.length).fill(1),
+        ...Array(balancedNegatives.length).fill(0)
+    ];
+
+    // Embaralhando inputs e labels juntos para não ficar 111000
+    const indices = Array.from({ length: inputs.length }, (_, i) => i);
+    tf.util.shuffle(indices);
+    
+    const shuffledInputs = indices.map(i => inputs[i]);
+    const shuffledLabels = indices.map(i => labels[i]);
+
     return {
-        xs: tf.tensor2d(inputs),
-        ys: tf.tensor2d(labels, [ labels.length, 1]),
+        xs: tf.tensor2d(shuffledInputs),
+        ys: tf.tensor2d(shuffledLabels, [shuffledLabels.length, 1]),
         inputDimension: context.dimentions * 2
     };
 }
@@ -148,19 +171,29 @@ async function configureNeuralNetAndTrain(trainingData) {
     // Camada de entrada
     model.add(tf.layers.dense({
         inputShape: [trainingData.inputDimension],
-        units: 128,
+        units: 256,
         activation: 'relu'
     }))
     // Camada oculta 1
     model.add(tf.layers.dense({
-        units: 64,
+        units: 128,
         activation: 'relu'
     }))
     // Camada oculta 2
     model.add(tf.layers.dense({
+        units: 64,
+        activation: 'relu'
+    }))
+    // Camada oculta 3
+    model.add(tf.layers.dense({
         units: 32,
         activation: 'relu'
-    })) 
+    }))
+    // Camada oculta 4
+    model.add(tf.layers.dense({
+        units: 16,
+        activation: 'relu'
+    }))
     // Camada de saída
     model.add(tf.layers.dense({
         units: 1, // 1 pois queremos somente uma saída
@@ -177,7 +210,7 @@ async function configureNeuralNetAndTrain(trainingData) {
     })
     
     await model.fit(trainingData.xs, trainingData.ys, {
-        epochs: 15, // Reduzido de 100 para 15 para melhor performance no browser
+        epochs: 500, // Reduzido de 100 para 15 para melhor performance no browser
         batchSize: 64, // Aumentado para lidar mais rápido com 4800+ filmes
         shuffle: true,
         callbacks: {
@@ -276,8 +309,11 @@ function recommend({ user }) {
     inputTensor.dispose();
     predictions.dispose();
 
+    const watchedIds = new Set(user.watchedMovies.map(m => String(m.id)));
+
     const sortedItems = recommendations
-        .sort((a, b) => b.score - a.score)
+        .filter(item => !watchedIds.has(String(item.id)))
+        .sort((a, b) => b.score - a.score);
 
     // 8️⃣ Envie a lista ordenada de filmes recomendados
     //    para a thread principal (a UI pode exibi-los agora).

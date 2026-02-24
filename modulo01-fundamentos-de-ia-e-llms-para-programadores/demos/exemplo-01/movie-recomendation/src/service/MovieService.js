@@ -15,7 +15,7 @@ export class MovieService {
                 header: true,
                 dynamicTyping: true,
                 skipEmptyLines: true,
-                preview: 52, // Limitar a leitura aos primeiros 52 filmes apenas
+                preview: 104, // Limitar a leitura aos primeiros 52 filmes apenas
                 complete: (results) => {
                     this.movies = results.data.map(movie => {
                         let parsedGenres = [];
@@ -23,7 +23,7 @@ export class MovieService {
                             try {
                                 parsedGenres = JSON.parse(movie.genres.replace(/'/g, '"')).map(g => g.name || g);
                             } catch (e) {
-                                parsedGenres = [];
+                                parsedGenres = movie.genres.split(' ').filter(g => g.trim() !== '');
                             }
                         } else if (Array.isArray(movie.genres)) {
                             parsedGenres = movie.genres;

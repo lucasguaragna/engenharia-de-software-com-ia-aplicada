@@ -1,16 +1,19 @@
 export class ModelController {
     #modelView;
     #userService;
+    #movieService;
     #events;
     #currentUser = null;
     #alreadyTrained = false;
     constructor({
         modelView,
         userService,
+        movieService,
         events,
     }) {
         this.#modelView = modelView;
         this.#userService = userService;
+        this.#movieService = movieService;
         this.#events = events;
 
         this.init();
@@ -70,6 +73,19 @@ export class ModelController {
     }
 
     async refreshUsersWatchedHistoryData({ users }) {
-        this.#modelView.renderAllUsersWatchedHistory(users);
+        const allMovies = await this.#movieService.getMovies();
+        
+        const enrichedUsers = users.map(user => {
+            const enrichedWatchedMovies = user.watchedMovies.map(watchedMovie => {
+                const fullMovie = allMovies.find(m => String(m.id) === String(watchedMovie.id));
+                if (fullMovie) {
+                    return { ...watchedMovie, ...fullMovie };
+                }
+                return watchedMovie;
+            });
+            return { ...user, watchedMovies: enrichedWatchedMovies };
+        });
+
+        this.#modelView.renderAllUsersWatchedHistory(enrichedUsers);
     }
 }

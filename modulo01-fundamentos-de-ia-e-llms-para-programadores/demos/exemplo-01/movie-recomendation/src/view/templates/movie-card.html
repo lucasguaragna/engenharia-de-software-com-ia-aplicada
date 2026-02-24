@@ -6,9 +6,13 @@
             <p class="card-text flex-grow-1" style="font-size: 0.9em; color: #555;">
                 {{overview}}
             </p>
-            <p class="card-text mb-2">
+            <p class="card-text mb-2" style="font-size: 0.85em;">
                 <strong>Rating:</strong> ⭐ {{vote_average}}<br>
                 <strong>Runtime:</strong> {{runtime}} min<br>
+                <strong>Budget:</strong> ${{budget}}<br>
+                <strong>Popularity:</strong> {{popularity}}<br>
+                <strong>Language:</strong> {{original_language}}<br>
+                <strong>Genres:</strong> {{genres}}<br>
             </p>
             <button class="btn btn-primary watch-now-btn w-100 mt-auto" data-movie='{{movie}}'><i class="bi bi-eye"></i> Watched</button>
         </div>

@@ -1,14 +1,17 @@
 export class UserController {
     #userService;
+    #movieService;
     #userView;
     #events;
     constructor({
         userView,
         userService,
+        movieService,
         events,
     }) {
         this.#userView = userView;
         this.#userService = userService;
+        this.#movieService = movieService;
         this.#events = events;
     }
 
@@ -80,8 +83,17 @@ export class UserController {
 
     async displayUserDetails(user) {
         this.#userView.renderUserDetails(user);
-        this.#userView.renderWatchedMovies(user.watchedMovies);
 
+        const allMovies = await this.#movieService.getMovies();
+        const enrichedWatchedMovies = user.watchedMovies.map(watchedMovie => {
+            const fullMovie = allMovies.find(m => String(m.id) === String(watchedMovie.id));
+            if (fullMovie) {
+                return { ...watchedMovie, ...fullMovie };
+            }
+            return watchedMovie;
+        });
+
+        this.#userView.renderWatchedMovies(enrichedWatchedMovies);
     }
 
     getSelectedUserId() {
