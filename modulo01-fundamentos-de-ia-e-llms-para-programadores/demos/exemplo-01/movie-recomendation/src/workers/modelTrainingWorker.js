@@ -17,17 +17,6 @@ const WEIGHTS = {
 const normalize = (value, min, max) => (value - min) / ((max - min) || 1);
 
 function makeContext(movies, users) {
-    movies.forEach(p => {
-        if (typeof p.genres === 'string') {
-            try {
-                p.genres = JSON.parse(p.genres.replace(/'/g, '"')).map(g => g.name);
-            } catch (e) {
-                p.genres = [];
-            }
-        } else if (!p.genres) {
-            p.genres = [];
-        }
-    });
 
     const budgets = movies.map(p => p.budget || 0);
     const minBudget = Math.min(...budgets);

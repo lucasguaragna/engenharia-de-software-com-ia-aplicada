@@ -1,16 +1,15 @@
 {
-    "name": "ecommerce-recomendations-with-ml",
+    "name": "movie-recomendation",
     "version": "1.0.0",
-    "description": "An e-commerce recommendation system with TensorFlow.js",
+    "description": "An movie recommendation system with TensorFlow.js",
     "main": "index.js",
     "type": "module",
     "scripts": {
-        "start": "browser-sync -w . --server --files 'index.html, data/*.json, js/*.js' --port 3000",
+        "start": "browser-sync -w . --server --files 'index.html, data/*.json, src/**/*.js' --port 3000",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [
-        "ecommerce",
-        "tensorflow",
+        "movie",
         "recommendation",
         "javascript"
     ],
