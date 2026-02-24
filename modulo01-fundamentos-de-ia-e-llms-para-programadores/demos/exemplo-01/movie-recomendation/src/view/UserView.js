@@ -75,11 +75,17 @@ export class UserView extends View {
         this.#watchedMoviesList.innerHTML = html;
         this.attachWatchedMovieClickHandlers();
 
-        // Initialize tooltips
-        const tooltipTriggerList = [].slice.call(this.#watchedMoviesList.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
+        // Initialize tooltips safely
+        try {
+            if (typeof bootstrap !== 'undefined') {
+                const tooltipTriggerList = [].slice.call(this.#watchedMoviesList.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            }
+        } catch (e) {
+             console.warn("Could not initialize tooltips:", e);
+        }
     }
 
     addWatchedMovie(movie) {
@@ -122,11 +128,17 @@ export class UserView extends View {
 
         this.attachWatchedMovieClickHandlers();
         
-        // Initialize tooltips for the new element
-        const tooltipTriggerList = [].slice.call(this.#watchedMoviesList.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
+        // Initialize tooltips for the new element safely
+        try {
+            if (typeof bootstrap !== 'undefined') {
+                const tooltipTriggerList = [].slice.call(this.#watchedMoviesList.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            }
+        } catch (e) {
+            console.warn("Could not initialize tooltips:", e);
+        }
     }
 
     attachUserSelectListener() {

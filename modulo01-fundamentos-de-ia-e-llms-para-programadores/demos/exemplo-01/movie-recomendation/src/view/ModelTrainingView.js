@@ -31,7 +31,6 @@ export class ModelView extends View {
 
         this.#watchedHistoryDiv.addEventListener('click', () => {
             const historyList = this.#allUsersWatchedHistoryList;
-
             const isHidden = window.getComputedStyle(historyList).display === 'none';
 
             if (isHidden) {
@@ -60,36 +59,46 @@ export class ModelView extends View {
     }
 
     renderAllUsersWatchedHistory(users) {
-        const html = users.map(user => {
-            const historyHtml = user.watchedMovies.map(movie => {
-                const genresStr = Array.isArray(movie.genres) ? movie.genres.join(', ') : (movie.genres || 'N/A');
-                const rating = movie.vote_average || 'N/A';
-                const runtime = movie.runtime ? `${movie.runtime} min` : 'N/A';
-                const budget = movie.budget ? `$${movie.budget.toLocaleString()}` : 'N/A';
-                const pop = movie.popularity ? movie.popularity.toFixed(1) : 'N/A';
-                const lang = movie.original_language ? movie.original_language.toUpperCase() : 'N/A';
+        let finalHtml = '';
+        users.forEach(user => {
+            let historyHtml = '';
+            if (user.watchedMovies && user.watchedMovies.length > 0) {
+                user.watchedMovies.forEach(movie => {
+                    const genresStr = Array.isArray(movie.genres) ? movie.genres.join(', ') : (movie.genres || 'N/A');
+                    const rating = movie.vote_average || 'N/A';
+                    const runtime = movie.runtime ? `${movie.runtime} min` : 'N/A';
+                    const budget = movie.budget ? `$${movie.budget.toLocaleString()}` : 'N/A';
+                    const pop = movie.popularity ? movie.popularity.toFixed(1) : 'N/A';
+                    const lang = movie.original_language ? movie.original_language.toUpperCase() : 'N/A';
 
-                const tooltipContent = `⭐ ${rating} | ⏱ ${runtime} | 💰 ${budget} | 📈 ${pop} | 🌍 ${lang} | 🎭 ${genresStr}`.replace(/"/g, '&quot;');
+                    const tooltipContent = `⭐ ${rating} | ⏱ ${runtime} | 💰 ${budget} | 📈 ${pop} | 🌍 ${lang} | 🎭 ${genresStr}`.replace(/"/g, '&quot;');
 
-                return `<span class="badge bg-light text-dark me-1 mb-1" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="${tooltipContent}">${movie.name}</span>`;
-            }).join('');
+                    historyHtml += `<span class="badge bg-secondary text-light me-1 mb-1" style="background-color: rgba(255,255,255,0.1) !important; border: 1px solid rgba(255,255,255,0.2);" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="${tooltipContent}">${movie.name}</span>`;
+                });
+            }
 
-            return `
+            finalHtml += `
                 <div class="user-watched-history-summary">
                     <h6>${user.name} (Age: ${user.age})</h6>
                     <div class="watched-history-badges">
-                        ${historyHtml || '<span class="text-muted">No watched movies</span>'}
+                        ${historyHtml || '<span class="text-secondary">No watched movies</span>'}
                     </div>
                 </div>
             `;
-        }).join('');
-
-        this.#allUsersWatchedHistoryList.innerHTML = html;
-
-        // Initialize tooltips
-        const tooltipTriggerList = [].slice.call(this.#allUsersWatchedHistoryList.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
         });
+
+        this.#allUsersWatchedHistoryList.innerHTML = finalHtml;
+
+        // Initialize tooltips safely
+        try {
+            if (typeof bootstrap !== 'undefined') {
+                const tooltipTriggerList = [].slice.call(this.#allUsersWatchedHistoryList.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            }
+        } catch (e) {
+            console.warn("Could not initialize tooltips:", e);
+        }
     }
 }
