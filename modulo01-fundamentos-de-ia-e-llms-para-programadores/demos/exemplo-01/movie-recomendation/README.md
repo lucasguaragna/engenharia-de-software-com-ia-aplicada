@@ -1,6 +1,8 @@
-# E-commerce Recommendation System
+# Movie Recomendation System
 
-A web application that displays user profiles and product listings, with the ability to track user purchases for future machine learning recommendations using TensorFlow.js.
+```markdown
+A web application that displays user profiles and movie listings, with the ability to track user history for future machine learning recommendations using TensorFlow.js.
+```
 
 ## Project Structure
 
@@ -14,26 +16,30 @@ A web application that displays user profiles and product listings, with the abi
 ## Setup and Run
 
 1. Install dependencies:
+
 ```
 npm install
 ```
 
 2. Start the application:
+
 ```
 npm start
 ```
 
-3. Open your browser and navigate to `http://localhost:8080`
+3. Open your browser and navigate to `http://localhost:3000`
 
+```markdown
 ## Features
 
 - User profile selection with details display
-- Past purchase history display
-- Product listing with "Buy Now" functionality
-- Purchase tracking using sessionStorage
+- Movie viewing history display
+- Movie listing with selection functionality
+- Interaction tracking using sessionStorage
 
 ## Future Enhancements
 
 - TensorFlow.js-based recommendation engine
 - User similarity analysis
-- Product recommendation based on purchase history
+- Movie recommendation based on viewing history
+```
