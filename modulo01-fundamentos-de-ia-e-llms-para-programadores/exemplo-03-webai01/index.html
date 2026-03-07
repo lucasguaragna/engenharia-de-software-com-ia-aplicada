@@ -1,16 +1,22 @@
+<button id="btn">Gerar Resposta</button>
 <output id="output"></output>
 <!-- https://www.jsdelivr.com/package/npm/markdown -->
 <script src="https://cdn.jsdelivr.net/npm/markdown@0.5.0/lib/markdown.min.js"></script>
 
 <script>
     const output = document.getElementById('output');
+    const btn = document.getElementById('btn');
 
-    ; (async () => {
+    btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        const availability = await LanguageModel.availability({ languages: ["pt"] })
+        console.log("Language Model Availability:", availability);
+
         const params = await LanguageModel.params()
         console.log("Language Model Params:", params);
 
         const temperature = params.defaultTemperature
-        const topK = params.defaultTopK
+        const topK = params.defaultTopK > 0 ? params.defaultTopK : 3
 
         const initialPrompts = [
             {
@@ -43,6 +49,7 @@
 
             // console.log(token)
         }
-    })();
+        btn.disabled = false;
+    });
 
 </script>
