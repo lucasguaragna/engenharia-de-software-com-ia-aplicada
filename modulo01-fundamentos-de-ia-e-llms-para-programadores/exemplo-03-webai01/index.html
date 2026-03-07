@@ -10,10 +10,10 @@
     btn.addEventListener('click', async () => {
         btn.disabled = true;
         const availability = await LanguageModel.availability({ languages: ["pt"] })
-        console.log("Language Model Availability:", availability);
+        //console.log("Language Model Availability:", availability);
 
         const params = await LanguageModel.params()
-        console.log("Language Model Params:", params);
+        //console.log("Language Model Params:", params);
 
         const temperature = params.defaultTemperature
         const topK = params.defaultTopK > 0 ? params.defaultTopK : 3
@@ -25,7 +25,7 @@
             }
         ]
 
-        const question = 'Quem inventou o JavaScript?'
+        const question = 'Me fale sobre a API que está sendo usada aqui no navegador.'
         output.innerHTML = "Gerando resposta...";
 
         const session = await LanguageModel.create({
@@ -47,7 +47,7 @@
             fullText += token;
             output.innerHTML = markdown.toHTML(fullText);
 
-            // console.log(token)
+            //console.log(token)
         }
         btn.disabled = false;
     });
