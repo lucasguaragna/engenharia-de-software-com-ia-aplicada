@@ -95,10 +95,9 @@ async function* askAI(question, temperature, topK) {
         aiContext.session.destroy();
     }
 
-    const session = await LanguageModel.create({
+    const options = {
         expectedInputLanguages: ["pt"],
         temperature: temperature,
-        topK: topK,
         initialPrompts: [
             {
                 role: 'system', content: `
@@ -107,7 +106,13 @@ async function* askAI(question, temperature, topK) {
 
             },
         ],
-    });
+    };
+
+    if (topK > 0 && typeof topK === 'number') {
+        options.topK = topK;
+    }
+
+    const session = await LanguageModel.create(options);
 
     const responseStream = await session.promptStreaming(
         [
@@ -137,7 +142,7 @@ async function checkRequirements() {
     const isChrome = !!window.chrome;
     if (!isChrome)
         errors.push("⚠️ Este recurso só funciona no Google Chrome ou Chrome Canary (versão recente).");
-    if (!('LanguageModel' in self)) {
+    if (typeof window.LanguageModel === 'undefined' && typeof LanguageModel === 'undefined') {
         errors.push("⚠️ As APIs nativas de IA não estão ativas.");
         errors.push("Ative a seguinte flag em chrome://flags/:");
         errors.push("- Prompt API for Gemini Nano (chrome://flags/#prompt-api-for-gemini-nano)");
@@ -160,29 +165,8 @@ async function checkRequirements() {
     }
 
     if (availability === 'downloadable') {
-        errors.push(`⚠️ O modelo de linguagem de IA precisa ser baixado, baixando agora... (acompanhe o progresso no terminal do chrome)`);
-        try {
-            const session = await LanguageModel.create({
-                expectedInputLanguages: ["pt"],
-                monitor(m) {
-                    m.addEventListener('downloadprogress', (e) => {
-                        const percent = ((e.loaded / e.total) * 100).toFixed(0);
-                        console.log(`Downloaded ${percent}%`);
-                    });
-                }
-            });
-            await session.prompt('Olá');
-            session.destroy();
-
-            // Re-check availability after download
-            const newAvailability = await LanguageModel.availability({ languages: ["pt"] });
-            if (newAvailability === 'available') {
-                return null; // Download successful
-            }
-        } catch (error) {
-            console.error('Error downloading model:', error);
-            errors.push(`⚠️ Erro ao baixar o modelo: ${error.message}`);
-        }
+        errors.push(`⚠️ O modelo de linguagem de IA precisa ser baixado.`);
+        errors.push(`<button id="btn-download" style="padding: 10px; margin-top: 10px; cursor: pointer;">Autorizar Download do Modelo</button>`);
     }
 
     return returnResults();
@@ -196,6 +180,32 @@ async function checkRequirements() {
     if (reqErrors) {
         elements.output.innerHTML = reqErrors.join('<br/>');
         elements.button.disabled = true;
+
+        const btnDownload = document.getElementById('btn-download');
+        if (btnDownload) {
+            btnDownload.addEventListener('click', async () => {
+                btnDownload.disabled = true;
+                btnDownload.textContent = 'Baixando... acompanhe o console';
+                try {
+                    const session = await LanguageModel.create({
+                        expectedInputLanguages: ["pt"],
+                        monitor(m) {
+                            m.addEventListener('downloadprogress', (e) => {
+                                const percent = ((e.loaded / e.total) * 100).toFixed(0);
+                                console.log(`Downloaded ${percent}%`);
+                                btnDownload.textContent = `Baixando... ${percent}%`;
+                            });
+                        }
+                    });
+                    await session.prompt('Olá');
+                    session.destroy();
+                    window.location.reload();
+                } catch(err) {
+                    console.error('Error downloading model:', err);
+                    btnDownload.textContent = `Erro: ${err.message}`;
+                }
+            });
+        }
         return;
     }
 
@@ -210,8 +220,9 @@ async function checkRequirements() {
 
     elements.topK.max = params.maxTopK;
     elements.topK.min = 1;
-    elements.topK.value = params.defaultTopK;
-    elements.topKValue.textContent = params.defaultTopK;
+    const initialTopK = params.defaultTopK > 0 ? params.defaultTopK : 3;
+    elements.topK.value = initialTopK;
+    elements.topKValue.textContent = initialTopK;
 
     elements.temperatureValue.textContent = params.defaultTemperature;
     elements.temperature.max = params.maxTemperature;
