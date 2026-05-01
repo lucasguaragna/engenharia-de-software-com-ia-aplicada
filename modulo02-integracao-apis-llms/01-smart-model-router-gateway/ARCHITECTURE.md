@@ -10,15 +10,15 @@ O diagrama abaixo mostra como uma requisição (pergunta) sai do usuário, passa
 graph TD
     %% Entidades Externas
     User([Usuário / Cliente HTTP])
-    
+
     %% Nosso Servidor Node.js
     subgraph Nossa Aplicacao Node.js
         Server["🖥️ Fastify Server\n(server.ts)\n\nLida com rotas HTTP,\nvalida dados e retorna\ncódigos 200/500"]
-        
+
         Service["🧠 OpenRouter Service\n(openRouterService.ts)\n\nA classe que encapsula o SDK,\ntem a regra de negócio e\no sistema de Retry"]
-        
+
         Config["⚙️ Configurações\n(config.ts)\n\nValida a API Key, dita\nos modelos permitidos e a\nregra de preço"]
-        
+
         SDK["📦 OpenRouter SDK\n(@openrouter/sdk)"]
     end
 
@@ -35,9 +35,9 @@ graph TD
     Server -->|Chama routerService.generate| Service
     Service -.->|Lê as regras| Config
     Service -->|Usa o .chat.send| SDK
-    
+
     SDK -->|Requisição via Internet| OpenRouterCloud
-    
+
     OpenRouterCloud -.->|Roteamento pelo\nMenor Preço| Nvidia
     OpenRouterCloud -.->|Roteamento pelo\nMenor Preço| Poolside
     OpenRouterCloud -.->|Roteamento pelo\nMenor Preço| Outros
