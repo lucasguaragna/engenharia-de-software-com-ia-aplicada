@@ -40,7 +40,7 @@ O diagrama abaixo ilustra exatamente o código que construímos no arquivo `grap
 
 ```mermaid
 graph TD
-    User([Usuário (via Fastify /chat)]) -->|Envia 'question'| GraphStart((START))
+    User(["Usuário (via Fastify /chat)"]) -->|Envia 'question'| GraphStart((START))
     
     subgraph Máquina de Estados (LangGraph)
         GraphStart -->|Inicia o Fluxo| IdentifyIntent["🧠 identifyIntentNode\n(O Classificador)"]
