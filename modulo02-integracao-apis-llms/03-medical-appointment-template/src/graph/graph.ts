@@ -1,3 +1,4 @@
+// Importing LangChain Modules
 import {
   StateGraph,
   START,
@@ -7,17 +8,22 @@ import {
 import { withLangGraph } from "@langchain/langgraph/zod";
 import type { BaseMessage } from '@langchain/core/messages';
 
+//Importing Nodes
 import { createSchedulerNode } from './nodes/schedulerNode.ts';
 import { createCancellerNode } from './nodes/cancellerNode.ts';
 import { createIdentifyIntentNode} from "./nodes/identifyIntentNode.ts";
 import { createMessageGeneratorNode } from "./nodes/messageGeneratorNode.ts";
 
+// Importing Zod: TypeScript-first validation library
 import { z } from "zod/v3";
 
+//Importing Services
+import { openRouterService } from "../services/openRouterService.ts";
+import { AppointmentService } from "../services/appointmentService.ts";
+
+// Defining the data format of AppontmentStateAnnotation with Zod
 const AppointmentStateAnnotation = z.object({
-  messages: withLangGraph(
-    z.custom<BaseMessage[]>(),
-    MessagesZodMeta),
+  messages: withLangGraph(z.custom<BaseMessage[]>(), MessagesZodMeta),
 
   patientName: z.string().optional(),
 
@@ -36,17 +42,19 @@ const AppointmentStateAnnotation = z.object({
 
 export type GraphState = z.infer<typeof AppointmentStateAnnotation>;
 
-export function buildAppointmentGraph() {
-
+export function buildAppointmentGraph(
+  llmClient: openRouterService, 
+  AppointmentService: AppointmentService
+) {
 
   // Build workflow graph
   const workflow = new StateGraph({
     stateSchema: AppointmentStateAnnotation,
   })
-    .addNode('identifyIntent', createIdentifyIntentNode())
-    .addNode('schedule', createSchedulerNode())
-    .addNode('cancel', createCancellerNode())
-    .addNode('message', createMessageGeneratorNode())
+    .addNode('identifyIntent', createIdentifyIntentNode(llmClient))
+    .addNode('schedule', createSchedulerNode(AppointmentService))
+    .addNode('cancel', createCancellerNode(AppointmentService))
+    .addNode('message', createMessageGeneratorNode(llmClient))
 
     // Flow
     .addEdge(START, 'identifyIntent')
